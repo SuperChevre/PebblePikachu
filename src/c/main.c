@@ -139,7 +139,7 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
 
   // Create BitmapLayer to display the Pokemon GBitmap
-  s_pokemon_layer = bitmap_layer_create(GRect(PBL_IF_ROUND_ELSE(36, 68), 45, 108, 90));
+  s_pokemon_layer = bitmap_layer_create(GRect(PBL_IF_ROUND_ELSE(36, 19), 45, 108, 90));
   bitmap_layer_set_compositing_mode(s_pokemon_layer, GCompOpSet);
   
   // Create BitmapLayer to display the Battery GBitmap
@@ -155,7 +155,7 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   // TIME
   // Create time layers
   s_time_layer = text_layer_create(
-      GRect(PBL_IF_ROUND_ELSE(18, 0), PBL_IF_ROUND_ELSE(0, 8), 144, 33));
+      GRect(PBL_IF_ROUND_ELSE(18, 0), PBL_IF_ROUND_ELSE(0, 0), 144, 33));
 
 
   // Style the text
@@ -173,7 +173,7 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   // STEP
   // Create step Layer
   s_step_layer = text_layer_create(
-      GRect( 0, 135, 180, 29));
+      GRect( 0, 135, PBL_IF_ROUND_ELSE(180, 144), 29));
 
   // Style the text
   text_layer_set_background_color(s_step_layer, GColorClear);
