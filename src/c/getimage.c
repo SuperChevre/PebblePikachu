@@ -1,6 +1,5 @@
 #include <pebble.h>
 #include <time.h>
-#include "pseudorandomgen.c"
 
 static int getPikachuHappiness(){
 

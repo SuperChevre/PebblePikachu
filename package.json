@@ -16,6 +16,12 @@
         "resources": {
             "media": [
                 {
+                    "file": "images/pika10.png",
+                    "name": "IMAGE_PIKA10",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
                     "file": "images/pika09.png",
                     "name": "IMAGE_PIKA09",
                     "targetPlatforms": null,
@@ -238,12 +244,6 @@
                 {
                     "file": "images/pika11.png",
                     "name": "IMAGE_PIKA11",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika10.png",
-                    "name": "IMAGE_PIKA10",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 }

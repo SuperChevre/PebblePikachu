@@ -54,26 +54,32 @@ static void draw_battery() {
  
   if (charge_state.is_charging) {
     resource_id = RESOURCE_ID_IMAGE_BATTERY;
-  } else if(charge_state.charge_percent <= 10) {
-    resource_id = RESOURCE_ID_IMAGE_BATTERY0;
-  } else if(charge_state.charge_percent <= 28) {
-    resource_id = RESOURCE_ID_IMAGE_BATTERY1;
-  } else if(charge_state.charge_percent <= 46) {
-    resource_id = RESOURCE_ID_IMAGE_BATTERY2;
-  } else if(charge_state.charge_percent <= 64) {
-    resource_id = RESOURCE_ID_IMAGE_BATTERY3;
-  } else if(charge_state.charge_percent <= 82) {
-    resource_id = RESOURCE_ID_IMAGE_BATTERY4;
-  } else {
-    resource_id = RESOURCE_ID_IMAGE_BATTERY5;
-  }
-
-  // Create GBitmap
+      // Create GBitmap
   s_battery_bitmap = gbitmap_create_with_resource(resource_id);
 
   // Set the bitmap onto the layer and add to the window
   bitmap_layer_set_bitmap(s_battery_layer, s_battery_bitmap);
   layer_add_child(window_layer, bitmap_layer_get_layer(s_battery_layer));
+  } else if(charge_state.charge_percent <= 10) {
+    resource_id = RESOURCE_ID_IMAGE_BATTERY0;
+      // Create GBitmap
+  s_battery_bitmap = gbitmap_create_with_resource(resource_id);
+
+  // Set the bitmap onto the layer and add to the window
+  bitmap_layer_set_bitmap(s_battery_layer, s_battery_bitmap);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_battery_layer));
+  } else if(charge_state.charge_percent <= 20) {
+    resource_id = RESOURCE_ID_IMAGE_BATTERY1;
+      // Create GBitmap
+  s_battery_bitmap = gbitmap_create_with_resource(resource_id);
+
+  // Set the bitmap onto the layer and add to the window
+  bitmap_layer_set_bitmap(s_battery_layer, s_battery_bitmap);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_battery_layer));
+  } else {
+    layer_remove_from_parent(bitmap_layer_get_layer(s_battery_layer));;
+  }
+  
 }
 
 
@@ -99,7 +105,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
   update_step();
   
-  if ( tick_time->tm_min == 30 || tick_time->tm_min == 0 ){
+  if ( tick_time->tm_min == 20 || tick_time->tm_min == 40 || tick_time->tm_min == 0 ){
     draw_pokemon( tick_time->tm_hour );
   }
   
@@ -137,7 +143,7 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   bitmap_layer_set_compositing_mode(s_pokemon_layer, GCompOpSet);
   
   // Create BitmapLayer to display the Battery GBitmap
-  s_battery_layer = bitmap_layer_create(GRect(40, 142, 24, 12));
+  s_battery_layer = bitmap_layer_create(GRect(20,122, 24, 12));
     
   // draw the initial pokemon
   time_t temp = time(NULL); 
@@ -149,7 +155,7 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   // TIME
   // Create time layers
   s_time_layer = text_layer_create(
-      GRect(PBL_IF_ROUND_ELSE(18, 0), PBL_IF_ROUND_ELSE(5, 8), 144, 33));
+      GRect(PBL_IF_ROUND_ELSE(18, 0), PBL_IF_ROUND_ELSE(0, 8), 144, 33));
 
 
   // Style the text
@@ -167,12 +173,12 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   // STEP
   // Create step Layer
   s_step_layer = text_layer_create(
-      GRect(PBL_IF_ROUND_ELSE(75, 72), 135, 64, 29));
+      GRect( 0, 135, 180, 29));
 
   // Style the text
   text_layer_set_background_color(s_step_layer, GColorClear);
   text_layer_set_text_color(s_step_layer, GColorBlack);
-  text_layer_set_text_alignment(s_step_layer, GTextAlignmentRight);
+  text_layer_set_text_alignment(s_step_layer, GTextAlignmentCenter);
   text_layer_set_text(s_step_layer, "0");
   text_layer_set_font(s_step_layer, s_font);
 
