@@ -23,7 +23,6 @@ if(mask & HealthServiceAccessibilityMaskAvailable) {
   APP_LOG(APP_LOG_LEVEL_ERROR, "Data unavailable!");
 }
   
-  
   // HERE ARE THE VALUES...
   if (  steps > 14000 ){
     return 1;
