@@ -1,1 +1,2 @@
+return pika_image;
 }

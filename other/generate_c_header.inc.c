@@ -43,5 +43,5 @@ if(mask & HealthServiceAccessibilityMaskAvailable) {
 
 static int getpikaimage( int pika_happiness, int current_hour ){
 
-getPikachuHappiness();
+srand( time(NULL)/1200 ); // Change random every 20 minutes
 int pika_image = RESOURCE_ID_IMAGE_PIKA65;

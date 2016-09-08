@@ -6,7 +6,7 @@ import sys,csv
 def getPikaImages (arr):
 
 	#get pseudorandom
-	print("		   switch( genrand()%" + str(len(arr)) + ") {")
+	print("		   switch( rand()%" + str(len(arr)) + ") {")
  	
 	indexarray=0
 	for pika in arr:
