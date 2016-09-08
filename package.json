@@ -16,20 +16,20 @@
         "resources": {
             "media": [
                 {
-                    "file": "fonts/digital2",
-                    "name": "FONT_DIGIT_32",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "file": "images/pika64.png",
-                    "name": "IMAGE_PIKA64",
+                    "file": "images/pika09.png",
+                    "name": "IMAGE_PIKA09",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
                 {
-                    "file": "images/pika04.png",
-                    "name": "IMAGE_PIKA04",
+                    "file": "images/pika08.png",
+                    "name": "IMAGE_PIKA08",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika07.png",
+                    "name": "IMAGE_PIKA07",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
@@ -46,117 +46,8 @@
                     "type": "bitmap"
                 },
                 {
-                    "file": "images/pika65.png",
-                    "name": "IMAGE_PIKA65",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika10.png",
-                    "name": "IMAGE_PIKA10",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika09.png",
-                    "name": "IMAGE_PIKA09",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika08.png",
-                    "name": "IMAGE_PIKA08",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika11.png",
-                    "name": "IMAGE_PIKA11",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika12.png",
-                    "name": "IMAGE_PIKA12",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika07.png",
-                    "name": "IMAGE_PIKA07",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika34.png",
-                    "name": "IMAGE_PIKA34",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika28.png",
-                    "name": "IMAGE_PIKA28",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika18.png",
-                    "name": "IMAGE_PIKA18",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika17.png",
-                    "name": "IMAGE_PIKA17",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika14.png",
-                    "name": "IMAGE_PIKA14",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika13.png",
-                    "name": "IMAGE_PIKA13",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika01.png",
-                    "menuIcon": true,
-                    "name": "IMAGE_PIKA01",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika84.png",
-                    "name": "IMAGE_PIKA84",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika30.png",
-                    "name": "IMAGE_PIKA30",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika21.png",
-                    "name": "IMAGE_PIKA21",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika20.png",
-                    "name": "IMAGE_PIKA20",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika19.png",
-                    "name": "IMAGE_PIKA19",
+                    "file": "images/pika04.png",
+                    "name": "IMAGE_PIKA04",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
@@ -173,26 +64,9 @@
                     "type": "bitmap"
                 },
                 {
-                    "file": "images/pika16.png",
-                    "name": "IMAGE_PIKA16",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/pika15.png",
-                    "name": "IMAGE_PIKA15",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "fonts/digital",
-                    "name": "FONT_DIGIT_28",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "file": "images/background.png",
-                    "name": "IMG_BACKGROUND",
+                    "file": "images/pika01.png",
+                    "menuIcon": true,
+                    "name": "IMAGE_PIKA01",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
@@ -244,6 +118,132 @@
                 {
                     "file": "images/battery.png",
                     "name": "IMAGE_BATTERY",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/background.png",
+                    "name": "IMG_BACKGROUND",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "fonts/digital2",
+                    "name": "FONT_DIGIT_32",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/digital",
+                    "name": "FONT_DIGIT_28",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "images/pika84.png",
+                    "name": "IMAGE_PIKA84",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika65.png",
+                    "name": "IMAGE_PIKA65",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika64.png",
+                    "name": "IMAGE_PIKA64",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika34.png",
+                    "name": "IMAGE_PIKA34",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika30.png",
+                    "name": "IMAGE_PIKA30",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika28.png",
+                    "name": "IMAGE_PIKA28",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika21.png",
+                    "name": "IMAGE_PIKA21",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika20.png",
+                    "name": "IMAGE_PIKA20",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika19.png",
+                    "name": "IMAGE_PIKA19",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika18.png",
+                    "name": "IMAGE_PIKA18",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika17.png",
+                    "name": "IMAGE_PIKA17",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika16.png",
+                    "name": "IMAGE_PIKA16",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika15.png",
+                    "name": "IMAGE_PIKA15",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika14.png",
+                    "name": "IMAGE_PIKA14",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika13.png",
+                    "name": "IMAGE_PIKA13",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika12.png",
+                    "name": "IMAGE_PIKA12",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika11.png",
+                    "name": "IMAGE_PIKA11",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/pika10.png",
+                    "name": "IMAGE_PIKA10",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 }
