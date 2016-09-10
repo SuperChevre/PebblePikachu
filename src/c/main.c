@@ -1,8 +1,6 @@
 #include <pebble.h>
 #include "getimage.c"
-
-#define KEY_POKEMON 0
-#define KEY_ROUTE 1
+#include "constants.h"
 
 static Window *s_main_window;
 
@@ -18,6 +16,8 @@ static GBitmap *s_pokemon_bitmap;
 
 static BitmapLayer *s_battery_layer;
 static GBitmap *s_battery_bitmap;
+
+static Layer *s_hapiness_progress;
 
 static GFont s_font;
 static GFont s_font2;
@@ -41,6 +41,26 @@ static void draw_pokemon( int currenthour ) {
   // Set the bitmap onto the layer and add to the window
   bitmap_layer_set_bitmap(s_pokemon_layer, s_pokemon_bitmap);
   layer_add_child(window_layer, bitmap_layer_get_layer(s_pokemon_layer));
+}
+
+static void draw_hapiness_progress_proc( Layer *layer, GContext *ctx ) {
+  Layer *window_layer = window_get_root_layer(s_main_window);
+  
+  int steps=getWeekSteps();
+  
+  if (steps>PIKA_MAX_HAPPY_PROGRESS){
+    steps=PIKA_MAX_HAPPY_PROGRESS; 
+  }
+  
+  int hapiness_angle=(( getWeekSteps() * 360) /PIKA_MAX_HAPPY_PROGRESS)/3+113;
+  
+  GRect bounds = layer_get_bounds( layer );
+
+  GRect frame = grect_inset(bounds, GEdgeInsets(5));
+  graphics_context_set_fill_color(ctx, GColorMidnightGreen );
+  graphics_fill_radial(ctx, frame, GOvalScaleModeFitCircle, 2, DEG_TO_TRIGANGLE(127), DEG_TO_TRIGANGLE(hapiness_angle));
+  
+
 }
 
 //
@@ -106,7 +126,9 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_step();
   
   if ( tick_time->tm_min == 20 || tick_time->tm_min == 40 || tick_time->tm_min == 0 ){
+    layer_mark_dirty(s_hapiness_progress);
     draw_pokemon( tick_time->tm_hour );
+    
   }
   
 }
@@ -129,7 +151,7 @@ s_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_28));
 s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32));
 
 
-  // BACKGROUND (LINE)  
+  // BACKGROUND 
   // Create GBitmap
   s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMG_BACKGROUND);
   // Create BitmapLayer to display the GBitmap
@@ -137,8 +159,13 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   // Set the bitmap onto the layer and add to the window
   bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);
   layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
+  
+  // Create BitmapLayer to display the Hapiness progress
+  s_hapiness_progress = layer_create(bounds);
+  layer_set_update_proc(s_hapiness_progress, draw_hapiness_progress_proc);
+  layer_add_child(window_layer, s_hapiness_progress);
 
-  // Create BitmapLayer to display the Pokemon GBitmap
+  // Create BitmapLayer to display the Pikachu GBitmap
   s_pokemon_layer = bitmap_layer_create(GRect(PBL_IF_ROUND_ELSE(36, 19), 45, 108, 90));
   bitmap_layer_set_compositing_mode(s_pokemon_layer, GCompOpSet);
   
@@ -151,6 +178,7 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   
   draw_pokemon( tick_time->tm_hour );  
   draw_battery();
+  layer_mark_dirty(s_hapiness_progress);
     
   // TIME
   // Create time layers
@@ -197,7 +225,8 @@ static void main_window_unload(Window *window) {
     
   gbitmap_destroy(s_battery_bitmap);
   bitmap_layer_destroy(s_battery_layer);  
-    
+   
+  layer_destroy(s_hapiness_progress);
   // Destroy text elements
   text_layer_destroy(s_step_layer);
   text_layer_destroy(s_time_layer);
