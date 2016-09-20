@@ -22,7 +22,25 @@ static Layer *s_hapiness_progress;
 static GFont s_font;
 static GFont s_font2;
 
-
+static GColor8 getHappyProgressColor( int steps ){
+    
+  if ( steps < 20000 ){
+    return GColorMidnightGreen;
+  }
+  else if ( steps < 40000 ){
+    return GColorCadetBlue;
+  }
+  else if ( steps < 60000 ){
+    return GColorMediumAquamarine;
+  }
+  else if ( steps < 80000 ){
+    return GColorIcterine;
+  }
+  else {
+    return GColorMelon;
+  }
+  return GColorMelon;
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Draw Pikachu
@@ -35,7 +53,8 @@ static void draw_pokemon( int currenthour ) {
   
   int resource_id = getpikaimage(pikahapiness,currenthour);
               
-  // Create GBitmap
+  // Destroy old GBitmap and create a new one
+  gbitmap_destroy(s_pokemon_bitmap);
   s_pokemon_bitmap = gbitmap_create_with_resource(resource_id);
 
   // Set the bitmap onto the layer and add to the window
@@ -47,20 +66,30 @@ static void draw_hapiness_progress_proc( Layer *layer, GContext *ctx ) {
   Layer *window_layer = window_get_root_layer(s_main_window);
   
   int steps=getWeekSteps();
-  
   if (steps>PIKA_MAX_HAPPY_PROGRESS){
     steps=PIKA_MAX_HAPPY_PROGRESS; 
   }
-  
-  int hapiness_angle=(( getWeekSteps() * 360) /PIKA_MAX_HAPPY_PROGRESS)/3+113;
-  
-  GRect bounds = layer_get_bounds( layer );
+  graphics_context_set_fill_color(ctx, getHappyProgressColor(steps) );
 
-  GRect frame = grect_inset(bounds, GEdgeInsets(5));
-  graphics_context_set_fill_color(ctx, GColorMidnightGreen );
-  graphics_fill_radial(ctx, frame, GOvalScaleModeFitCircle, 2, DEG_TO_TRIGANGLE(127), DEG_TO_TRIGANGLE(hapiness_angle));
+  #if defined(PBL_ROUND)
+    int hapiness_angle=(( steps * 360) /PIKA_MAX_HAPPY_PROGRESS)/3+108;
+    
+    GRect bounds = layer_get_bounds( layer );
   
-
+    GRect frame = grect_inset(bounds, GEdgeInsets(7));
+    graphics_fill_radial(ctx, frame, GOvalScaleModeFitCircle, 2, DEG_TO_TRIGANGLE(132), DEG_TO_TRIGANGLE(hapiness_angle));
+  #elif defined(PBL_RECT)
+    int hapiness_size=(( steps * 124) /PIKA_MAX_HAPPY_PROGRESS);
+    GRect bounds = layer_get_bounds( layer );
+    GRect frame = grect_inset(bounds, GEdgeInsets(1));
+    frame.origin.y=164;
+    frame.origin.x=10;
+    frame.size.h=3;
+    frame.size.w=hapiness_size;
+    
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "%d %d %d %d",frame.origin.y,frame.origin.x,frame.size.h,frame.size.w);
+    graphics_fill_rect(ctx, frame,0,0);
+  #endif
 }
 
 //
