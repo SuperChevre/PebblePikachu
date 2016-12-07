@@ -75,7 +75,7 @@ static void draw_pika_animated( int currenthour ) {
 
 
     int resource_anim = getpikaanim( currenthour, pikahapiness );
-    if ( resource_anim == NULL ){
+    if ( resource_anim == -1 ){
       draw_pokemon(current_hour);
     }
     else {

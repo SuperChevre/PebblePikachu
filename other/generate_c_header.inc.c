@@ -50,7 +50,7 @@ int steps = getWeekSteps();
 
 static int getpikaanim( int pika_happiness, int current_hour ){
   if ( current_hour<8 || current_hour>=23 ){
-    return NULL;
+    return -1;
   }
   else {
     if (pika_happiness == 0){
