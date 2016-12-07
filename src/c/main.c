@@ -23,7 +23,7 @@ static GFont s_font;
 static GFont s_font2;
 
 static GColor8 getHappyProgressColor( int steps ){
-    
+
   return GColorMelon;
 }
 
@@ -36,9 +36,9 @@ static GBitmap *s_bitmap;
 
 static void draw_pokemon( int currenthour ) {
   Layer *window_layer = window_get_root_layer(s_main_window);
-  
+
   int pikahapiness = getPikachuHappiness();
-  
+
   int resource_id = getpikaimage(pikahapiness,currenthour);
   s_pokemon_bitmap = gbitmap_create_with_resource(resource_id);
 
@@ -64,36 +64,44 @@ static void pika_timer_handler(void *context) {
   else {
     // draw pikachu usual
     // draw the initial pokemon
-    time_t temp = time(NULL); 
+    time_t temp = time(NULL);
     struct tm *tick_time = localtime(&temp);
     draw_pokemon( tick_time->tm_hour);
   }
 }
 
-static void draw_pika_animated( ) {
-    s_sequence = gbitmap_sequence_create_with_resource(RESOURCE_ID_IMAGE_ANIM_1 );
-    // Create blank GBitmap using APNG frame size
-    GSize frame_size = gbitmap_sequence_get_bitmap_size(s_sequence);
-    
-    s_bitmap = gbitmap_create_blank(frame_size, GBitmapFormat8Bit);
-    gbitmap_sequence_set_play_count(s_sequence, 1);
-    app_timer_register(2000, pika_timer_handler, NULL); 
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "ANIM FRAME SIZE %d %d",frame_size.w, frame_size.h);
+static void draw_pika_animated( int currenthour ) {
+    int pikahapiness = getPikachuHappiness();
 
+
+    int resource_anim = getpikaanim( currenthour, pikahapiness );
+    if ( resource_anim == NULL ){
+      draw_pokemon(current_hour);
+    }
+    else {
+      s_sequence = gbitmap_sequence_create_with_resource(RESOURCE_ID_IMAGE_ANIM_1 );
+      // Create blank GBitmap using APNG frame size
+      GSize frame_size = gbitmap_sequence_get_bitmap_size(s_sequence);
+
+      s_bitmap = gbitmap_create_blank(frame_size, GBitmapFormat8Bit);
+      gbitmap_sequence_set_play_count(s_sequence, 10);
+      app_timer_register(10, pika_timer_handler, NULL);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "ANIM FRAME SIZE %d %d",frame_size.w, frame_size.h);
+    }
 }
 
-static void draw_hapiness_progress_proc( Layer *layer, GContext *ctx ) {  
+static void draw_hapiness_progress_proc( Layer *layer, GContext *ctx ) {
   int steps=getWeekSteps();
   if (steps>PIKA_MAX_HAPPY_PROGRESS){
-    steps=PIKA_MAX_HAPPY_PROGRESS; 
+    steps=PIKA_MAX_HAPPY_PROGRESS;
   }
   graphics_context_set_fill_color(ctx, getHappyProgressColor(steps) );
 
   #if defined(PBL_ROUND)
     int hapiness_angle=(( steps * 360) /PIKA_MAX_HAPPY_PROGRESS)/4+138;
-    
+
     GRect bounds = layer_get_bounds( layer );
-  
+
     GRect frame = grect_inset(bounds, GEdgeInsets(7));
     graphics_fill_radial(ctx, frame, GOvalScaleModeFitCircle, 2, DEG_TO_TRIGANGLE(132), DEG_TO_TRIGANGLE(hapiness_angle));
   #elif defined(PBL_RECT)
@@ -104,7 +112,7 @@ static void draw_hapiness_progress_proc( Layer *layer, GContext *ctx ) {
     frame.origin.x=10;
     frame.size.h=3;
     frame.size.w=hapiness_size;
-    
+
     APP_LOG(APP_LOG_LEVEL_DEBUG, "%d %d %d %d",frame.origin.y,frame.origin.x,frame.size.h,frame.size.w);
     graphics_fill_rect(ctx, frame,0,0);
   #endif
@@ -118,7 +126,7 @@ static void draw_battery() {
   Layer *window_layer = window_get_root_layer(s_main_window);
   int resource_id;
   BatteryChargeState charge_state = battery_state_service_peek();
- 
+
   if (charge_state.is_charging) {
     resource_id = RESOURCE_ID_IMAGE_BATTERY;
       // Create GBitmap
@@ -146,7 +154,7 @@ static void draw_battery() {
   } else {
     layer_remove_from_parent(bitmap_layer_get_layer(s_battery_layer));;
   }
-  
+
 }
 
 
@@ -171,13 +179,13 @@ static void update_step() {
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
   update_step();
-  
+
   if ( tick_time->tm_min == 20 || tick_time->tm_min == 40 || tick_time->tm_min == 0 ){
     layer_mark_dirty(s_hapiness_progress);
     draw_pokemon( tick_time->tm_hour );
-    
+
   }
-  
+
 }
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
@@ -185,20 +193,20 @@ static void tap_handler(AccelAxisType axis, int32_t direction) {
 }
 
 static void battery_handler(BatteryChargeState charge_state) {
-  draw_battery();   
+  draw_battery();
 }
 
 static void main_window_load(Window *window) {
   // Get information about the Window
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
-  
+
   // Load the custom font
 s_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_28));
 s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32));
 
 
-  // BACKGROUND 
+  // BACKGROUND
   // Create GBitmap
   s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMG_BACKGROUND);
   // Create BitmapLayer to display the GBitmap
@@ -206,7 +214,7 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   // Set the bitmap onto the layer and add to the window
   bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);
   layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
-  
+
   // Create BitmapLayer to display the Hapiness progress
   s_hapiness_progress = layer_create(bounds);
   layer_set_update_proc(s_hapiness_progress, draw_hapiness_progress_proc);
@@ -216,14 +224,14 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   s_pokemon_layer = bitmap_layer_create(GRect(PBL_IF_ROUND_ELSE(36, 19), 45, 108, 90));
   bitmap_layer_set_compositing_mode(s_pokemon_layer, GCompOpSet);
   layer_add_child(window_layer, (Layer *)s_pokemon_layer);
-  
+
   // Create BitmapLayer to display the Battery GBitmap
   s_battery_layer = bitmap_layer_create(GRect(20,122, 24, 12));
-    
-  draw_pika_animated(); 
+
+  draw_pika_animated();
   draw_battery();
   layer_mark_dirty(s_hapiness_progress);
-    
+
   // TIME
   // Create time layers
   s_time_layer = text_layer_create(
@@ -267,10 +275,10 @@ static void main_window_unload(Window *window) {
   gbitmap_sequence_destroy(s_sequence);
   bitmap_layer_destroy(s_pokemon_layer);
 
-    
+
   gbitmap_destroy(s_battery_bitmap);
-  bitmap_layer_destroy(s_battery_layer);  
-   
+  bitmap_layer_destroy(s_battery_layer);
+
   layer_destroy(s_hapiness_progress);
   // Destroy text elements
   text_layer_destroy(s_step_layer);
