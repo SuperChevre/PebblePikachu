@@ -24,26 +24,14 @@ static GFont s_font2;
 
 static GColor8 getHappyProgressColor( int steps ){
     
-  if ( steps < 20000 ){
-    return GColorMidnightGreen;
-  }
-  else if ( steps < 40000 ){
-    return GColorCadetBlue;
-  }
-  else if ( steps < 60000 ){
-    return GColorMediumAquamarine;
-  }
-  else if ( steps < 80000 ){
-    return GColorIcterine;
-  }
-  else {
-    return GColorMelon;
-  }
   return GColorMelon;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Draw Pikachu
+static GBitmapSequence *s_sequence;
+static GBitmap *s_bitmap;
+
 
 
 static void draw_pokemon( int currenthour ) {
@@ -52,19 +40,49 @@ static void draw_pokemon( int currenthour ) {
   int pikahapiness = getPikachuHappiness();
   
   int resource_id = getpikaimage(pikahapiness,currenthour);
-              
-  // Destroy old GBitmap and create a new one
-  gbitmap_destroy(s_pokemon_bitmap);
   s_pokemon_bitmap = gbitmap_create_with_resource(resource_id);
 
   // Set the bitmap onto the layer and add to the window
   bitmap_layer_set_bitmap(s_pokemon_layer, s_pokemon_bitmap);
-  layer_add_child(window_layer, bitmap_layer_get_layer(s_pokemon_layer));
+  layer_mark_dirty(bitmap_layer_get_layer(s_pokemon_layer));
 }
 
-static void draw_hapiness_progress_proc( Layer *layer, GContext *ctx ) {
-  Layer *window_layer = window_get_root_layer(s_main_window);
-  
+
+static void pika_timer_handler(void *context) {
+  uint32_t next_delay;
+
+  // Advance to the next APNG frame, and get the delay for this frame
+  if(gbitmap_sequence_update_bitmap_next_frame(s_sequence, s_bitmap, &next_delay)) {
+    // Set the new frame into the BitmapLayer
+    bitmap_layer_set_bitmap(s_pokemon_layer, s_bitmap);
+    layer_mark_dirty(bitmap_layer_get_layer(s_pokemon_layer));
+
+    // Timer for that frame's delay
+    app_timer_register(next_delay, pika_timer_handler, NULL);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "ANIM NEXT DELAY %d",next_delay);
+  }
+  else {
+    // draw pikachu usual
+    // draw the initial pokemon
+    time_t temp = time(NULL); 
+    struct tm *tick_time = localtime(&temp);
+    draw_pokemon( tick_time->tm_hour);
+  }
+}
+
+static void draw_pika_animated( ) {
+    s_sequence = gbitmap_sequence_create_with_resource(RESOURCE_ID_IMAGE_ANIM_1 );
+    // Create blank GBitmap using APNG frame size
+    GSize frame_size = gbitmap_sequence_get_bitmap_size(s_sequence);
+    
+    s_bitmap = gbitmap_create_blank(frame_size, GBitmapFormat8Bit);
+    gbitmap_sequence_set_play_count(s_sequence, 1);
+    app_timer_register(2000, pika_timer_handler, NULL); 
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "ANIM FRAME SIZE %d %d",frame_size.w, frame_size.h);
+
+}
+
+static void draw_hapiness_progress_proc( Layer *layer, GContext *ctx ) {  
   int steps=getWeekSteps();
   if (steps>PIKA_MAX_HAPPY_PROGRESS){
     steps=PIKA_MAX_HAPPY_PROGRESS; 
@@ -72,7 +90,7 @@ static void draw_hapiness_progress_proc( Layer *layer, GContext *ctx ) {
   graphics_context_set_fill_color(ctx, getHappyProgressColor(steps) );
 
   #if defined(PBL_ROUND)
-    int hapiness_angle=(( steps * 360) /PIKA_MAX_HAPPY_PROGRESS)/3+108;
+    int hapiness_angle=(( steps * 360) /PIKA_MAX_HAPPY_PROGRESS)/4+138;
     
     GRect bounds = layer_get_bounds( layer );
   
@@ -197,15 +215,12 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   // Create BitmapLayer to display the Pikachu GBitmap
   s_pokemon_layer = bitmap_layer_create(GRect(PBL_IF_ROUND_ELSE(36, 19), 45, 108, 90));
   bitmap_layer_set_compositing_mode(s_pokemon_layer, GCompOpSet);
+  layer_add_child(window_layer, (Layer *)s_pokemon_layer);
   
   // Create BitmapLayer to display the Battery GBitmap
   s_battery_layer = bitmap_layer_create(GRect(20,122, 24, 12));
     
-  // draw the initial pokemon
-  time_t temp = time(NULL); 
-  struct tm *tick_time = localtime(&temp);
-  
-  draw_pokemon( tick_time->tm_hour );  
+  draw_pika_animated(); 
   draw_battery();
   layer_mark_dirty(s_hapiness_progress);
     
@@ -249,6 +264,7 @@ static void main_window_unload(Window *window) {
   bitmap_layer_destroy(s_background_layer);
 
   gbitmap_destroy(s_pokemon_bitmap);
+  gbitmap_sequence_destroy(s_sequence);
   bitmap_layer_destroy(s_pokemon_layer);
 
     

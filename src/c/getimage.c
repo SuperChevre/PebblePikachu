@@ -32,8 +32,6 @@ static int getPikachuHappiness(){
 int steps = getWeekSteps();
 
 
-
-
   // HERE ARE THE VALUES...
   if (  steps > 24000 ){
     return 1;
