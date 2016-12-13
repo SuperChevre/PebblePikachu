@@ -48,9 +48,12 @@ int steps = getWeekSteps();
 
 }
 
-static int getpikaanim( int pika_happiness, int current_hour ){
+static int getpikaanim( int pika_happiness, int current_hour, int ismoving ){
   if ( current_hour<8 || current_hour>=23 ){
     return -1;
+  }
+  else if ( ismoving ){
+    return RESOURCE_ID_IMAGE_ANIM_MOVE_1;
   }
   else {
     if (pika_happiness == 0){
@@ -66,7 +69,7 @@ static int getpikaanim( int pika_happiness, int current_hour ){
       return RESOURCE_ID_IMAGE_ANIM_2;
     }
   }
-
+  return -1;
 }
 
 static int getpikaimage( int pika_happiness, int current_hour ){

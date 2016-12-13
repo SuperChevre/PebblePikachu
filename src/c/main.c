@@ -12,7 +12,7 @@ static GBitmap *s_background_bitmap;
 
 
 static BitmapLayer *s_pokemon_layer;
-static GBitmap *s_pokemon_bitmap;
+static GBitmap *s_static_bitmap;
 
 static BitmapLayer *s_battery_layer;
 static GBitmap *s_battery_bitmap;
@@ -22,28 +22,31 @@ static Layer *s_hapiness_progress;
 static GFont s_font;
 static GFont s_font2;
 
+static int step_count = -1;
+
 static GColor8 getHappyProgressColor( int steps ){
 
   return GColorMelon;
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Draw Pikachu
+// Draw Pikachu Animation
 static GBitmapSequence *s_sequence;
 static GBitmap *s_bitmap;
-
+static AppTimer *s_timer = NULL;
 
 
 static void draw_pokemon( int currenthour ) {
-  Layer *window_layer = window_get_root_layer(s_main_window);
 
+  
+  
   int pikahapiness = getPikachuHappiness();
 
   int resource_id = getpikaimage(pikahapiness,currenthour);
-  s_pokemon_bitmap = gbitmap_create_with_resource(resource_id);
+  s_static_bitmap = gbitmap_create_with_resource(resource_id);
 
   // Set the bitmap onto the layer and add to the window
-  bitmap_layer_set_bitmap(s_pokemon_layer, s_pokemon_bitmap);
+  bitmap_layer_set_bitmap(s_pokemon_layer, s_static_bitmap);
   layer_mark_dirty(bitmap_layer_get_layer(s_pokemon_layer));
 }
 
@@ -58,10 +61,12 @@ static void pika_timer_handler(void *context) {
     layer_mark_dirty(bitmap_layer_get_layer(s_pokemon_layer));
 
     // Timer for that frame's delay
-    app_timer_register(next_delay, pika_timer_handler, NULL);
+    s_timer=app_timer_register(next_delay, pika_timer_handler, NULL);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "ANIM NEXT DELAY %d",next_delay);
   }
   else {
+    
+    
     // draw pikachu usual
     // draw the initial pokemon
     time_t temp = time(NULL);
@@ -70,23 +75,22 @@ static void pika_timer_handler(void *context) {
   }
 }
 
-static void draw_pika_animated( int currenthour ) {
+static void draw_pika_animated( int currenthour, int ismoving ) {
+    
+    app_timer_cancel(s_timer);
+  
     int pikahapiness = getPikachuHappiness();
 
 
-    int resource_anim = getpikaanim( currenthour, pikahapiness );
+    int resource_anim = getpikaanim( pikahapiness, currenthour, ismoving );
     if ( resource_anim == -1 ){
-      draw_pokemon(current_hour);
+      draw_pokemon(currenthour);
     }
     else {
-      s_sequence = gbitmap_sequence_create_with_resource(RESOURCE_ID_IMAGE_ANIM_1 );
-      // Create blank GBitmap using APNG frame size
-      GSize frame_size = gbitmap_sequence_get_bitmap_size(s_sequence);
+      s_sequence = gbitmap_sequence_create_with_resource( resource_anim );
 
-      s_bitmap = gbitmap_create_blank(frame_size, GBitmapFormat8Bit);
-      gbitmap_sequence_set_play_count(s_sequence, 10);
-      app_timer_register(10, pika_timer_handler, NULL);
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "ANIM FRAME SIZE %d %d",frame_size.w, frame_size.h);
+      gbitmap_sequence_set_play_count(s_sequence, 70);
+      s_timer = app_timer_register(100, pika_timer_handler, NULL);
     }
 }
 
@@ -167,13 +171,23 @@ static void update_time() {
   text_layer_set_text(s_time_layer, s_buffer);
 }
 
-static void update_step() {
+static int update_step() {
   // buffer
   static char s_buffer[8];
 
   // Display time and step count
-  snprintf(s_buffer, sizeof(s_buffer), "%d", (int)health_service_sum_today(HealthMetricStepCount));
+  int new_step_count=(int)health_service_sum_today(HealthMetricStepCount);
+  snprintf(s_buffer, sizeof(s_buffer), "%d", new_step_count);
   text_layer_set_text(s_step_layer, s_buffer);
+  
+  if( new_step_count > step_count && step_count != -1){
+    step_count=new_step_count;
+    return 1;
+  }
+  else{
+    step_count=new_step_count;
+    return 0;
+  }
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
@@ -186,10 +200,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
   }
 
-}
-
-static void tap_handler(AccelAxisType axis, int32_t direction) {
-  update_step();
 }
 
 static void battery_handler(BatteryChargeState charge_state) {
@@ -220,15 +230,20 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   layer_set_update_proc(s_hapiness_progress, draw_hapiness_progress_proc);
   layer_add_child(window_layer, s_hapiness_progress);
 
-  // Create BitmapLayer to display the Pikachu GBitmap
-  s_pokemon_layer = bitmap_layer_create(GRect(PBL_IF_ROUND_ELSE(36, 19), 45, 108, 90));
-  bitmap_layer_set_compositing_mode(s_pokemon_layer, GCompOpSet);
-  layer_add_child(window_layer, (Layer *)s_pokemon_layer);
-
   // Create BitmapLayer to display the Battery GBitmap
   s_battery_layer = bitmap_layer_create(GRect(20,122, 24, 12));
 
-  draw_pika_animated();
+  
+  // Create BitmapLayer to display the Pikachu GBitmap
+  s_bitmap = gbitmap_create_blank(GSize(108,90), GBitmapFormat8Bit); 
+  s_pokemon_layer = bitmap_layer_create(GRect(PBL_IF_ROUND_ELSE(36, 19), 45, 108, 90));
+  bitmap_layer_set_compositing_mode(s_pokemon_layer, GCompOpSet);
+  layer_add_child(window_layer, (Layer *)s_pokemon_layer);
+  
+  
+  time_t temp = time(NULL);
+  struct tm *tick_time = localtime(&temp);
+  draw_pika_animated( tick_time->tm_hour, 0);
   draw_battery();
   layer_mark_dirty(s_hapiness_progress);
 
@@ -246,7 +261,7 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
   // Use a custom font in a TextLayer
   text_layer_set_font(s_time_layer, s_font2);
 
-
+  
   // Add layers to the window
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer));
 
@@ -264,6 +279,11 @@ s_font2 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGIT_32))
 
   // Add layer to the window
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_step_layer));
+  
+  // Pikachu gbitmap
+  // Create blank GBitmap using APNG frame size
+  GSize frame_size = gbitmap_sequence_get_bitmap_size(s_sequence);
+  s_bitmap = gbitmap_create_blank(frame_size, GBitmapFormat8Bit);
 }
 
 static void main_window_unload(Window *window) {
@@ -271,7 +291,9 @@ static void main_window_unload(Window *window) {
   gbitmap_destroy(s_background_bitmap);
   bitmap_layer_destroy(s_background_layer);
 
-  gbitmap_destroy(s_pokemon_bitmap);
+  gbitmap_destroy(s_bitmap);
+  gbitmap_destroy(s_static_bitmap);
+
   gbitmap_sequence_destroy(s_sequence);
   bitmap_layer_destroy(s_pokemon_layer);
 
@@ -304,12 +326,14 @@ static void init() {
 
   // Make sure the steps are displayed from the start
   update_time();
+  
+  step_count=-1;
+  
   update_step();
   draw_battery();
 
   // Register with TickTimerService and AccelTapService
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
-  accel_tap_service_subscribe(tap_handler);
   battery_state_service_subscribe(battery_handler);
 
 }
